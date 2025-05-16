@@ -3,8 +3,8 @@ name: CI/CD Pipeline
 on: [push, pull_request]
 
 env:
-  DOCKER_HUB_REPO: vertual08/kr  # Замените на ваш репозиторий
-  DOCKERFILE_PATH: ./Dockerfile   # Путь к Dockerfile
+  DOCKER_HUB_REPO: vertual08/kr
+  DOCKERFILE_PATH: ./Dockerfile
 
 jobs:
   lint:
@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.9'
     
@@ -30,7 +30,7 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.9'
     
@@ -44,13 +44,19 @@ jobs:
         python -m pytest -v --cov=. --cov-report=xml
     
     - name: Upload coverage
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
 
   build-and-push:
     needs: test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Debug Dockerfile
+      run: cat ${{ env.DOCKERFILE_PATH }}
+    
+    - name: Debug requirements.txt
+      run: cat requirements.txt
     
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -64,7 +70,7 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_TOKEN }}
     
     - name: Build and push
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v5
       with:
         context: .
         file: ${{ env.DOCKERFILE_PATH }}
