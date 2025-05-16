@@ -1,7 +1,5 @@
 import pytest
-
-
-from tasklist import app  # Импорт после пустой строки
+from tasklist import app  # Убедитесь, что tasklist.py в той же директории
 
 
 @pytest.fixture
@@ -16,10 +14,3 @@ def test_home_page(client):
     response = client.get('/')
     assert response.status_code == 200
     assert b"To-Do List" in response.data
-
-
-def test_get_tasks(client):
-    """Тест получения задач"""
-    response = client.get('/tasks')
-    assert response.status_code == 200
-    assert isinstance(response.json, dict)

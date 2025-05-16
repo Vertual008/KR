@@ -50,3 +50,8 @@ jobs:
 
     - name: Upload coverage
       uses: codecov/codecov-action@v3
+
+- name: Install dependencies
+  run: |
+    pip install -r requirements.txt
+    pip install pytest-cov
