@@ -20,14 +20,15 @@ def get_task(task_id):
 def add_task():
     try:
         new_task = {
-            "id": max(t["id"] for t in tasks) + 1 if tasks else 1,
+            "id": max(t["id"] for t in tasks) + 1,
             "task": request.json["task"],
             "done": False
         }
         tasks.append(new_task)
-        return jsonify({"message": "Задача добавлена", "task": new_task}), 201
-    except:
-        return jsonify({"error": "Неверные данные"}), 400
+        return jsonify({"message": "Задача добавлена"})
+    except Exception:
+        return jsonify({"error": "Ошибка"}), 400
+# Добавьте 2 пустые строки после этой функции
 @app.route('/complete_task/<int:task_id>', methods=['PUT'])
 def complete_task(task_id):
     task = next((t for t in tasks if t["id"] == task_id), None)
