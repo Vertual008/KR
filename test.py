@@ -1,5 +1,5 @@
 import pytest
-from app import app
+from tasklist import app
 
 
 @pytest.fixture
