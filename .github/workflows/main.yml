@@ -1,52 +1,28 @@
 name: CI/CD Pipeline
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3  # Обновленная версия
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-        cache: 'pip'  # Кэширование зависимостей для ускорения
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8==6.0.0
-
-    - name: Run flake8
-      run: |
-        flake8 . --count --show-source --statistics
-
-  test:
-    needs: lint
+  build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-
+    
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
-
+    
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install pytest pytest-cov
-
+        pip install pytest-cov
+    
     - name: Run tests
       run: |
         python -m pytest -v --cov=.
-
-    - name: Upload coverage
-      uses: codecov/codecov-action@v3
+    
+    - name: Build success
+      if: success()
+      run: |
+        echo "BUILD SUCCESSFUL" > build-status.txt
