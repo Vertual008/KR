@@ -1,6 +1,5 @@
 import pytest
-from app import app
-
+from app import app, tasks
 
 @pytest.fixture
 def client():
@@ -8,17 +7,13 @@ def client():
     with app.test_client() as client:
         yield client
 
+def test_get_tasks(client):
+    response = client.get('/tasks')
+    assert response.status_code == 200
+    assert isinstance(response.json['tasks'], list)
 
-def test_home(client):
-    rv = client.get('/')
-    assert rv.data == b"Privet!"
-
-
-def test_add(client):
-    rv = client.get('/add?a=2&b=3')
-    assert rv.json == {"result": 5.0}
-
-
-def test_subtract(client):
-    rv = client.get('/subtract?a=5&b=3')
-    assert rv.json == {"result": 2.0}
+def test_add_task(client):
+    test_data = {'task': 'Новая тестовая задача'}
+    response = client.post('/add_task', json=test_data)
+    assert response.status_code == 200
+    assert 'Задача добавлена' in response.json['message']
