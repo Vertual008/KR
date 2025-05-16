@@ -43,21 +43,7 @@ jobs:
       uses: codecov/codecov-action@v3
 
   build:
-    needs: test  # Зависит от успешного завершения test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-    
-    - name: Install dependencies
-      run: pip install -r requirements.txt
-    
-    - name: Build package
-       needs: test_tasklist.py
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
