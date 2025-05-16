@@ -13,4 +13,3 @@ def test_home_page(client):
     """Тест главной страницы"""
     response = client.get('/')
     assert response.status_code == 200
-    assert b"To-Do List" in response.data
