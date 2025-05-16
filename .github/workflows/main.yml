@@ -1,9 +1,26 @@
 name: CI/CD Pipeline
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  build:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install linter
+      run: pip install flake8==6.0.0
+    
+    - name: Run flake8
+      run: flake8 . --count --show-source --statistics
+
+  test:
+    needs: lint  # Зависит от успешного завершения lint
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -16,13 +33,37 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install pytest-cov
+        pip install pytest pytest-cov
     
     - name: Run tests
       run: |
-        python -m pytest -v --cov=.
+        python -m pytest -v --cov=. --cov-report=xml
     
-    - name: Build success
-      if: success()
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+
+  build:
+    needs: test  # Зависит от успешного завершения test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    
+    - name: Build package
       run: |
+        echo "Building application..."
+        # Здесь могут быть ваши команды сборки
         echo "BUILD SUCCESSFUL" > build-status.txt
+    
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: build-status.txt
